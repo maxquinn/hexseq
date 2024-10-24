@@ -1,76 +1,117 @@
-import { useSynth } from "@/app/_hooks/use-synth";
+import { useDetuneSynth } from "@/app/_hooks/use-synth";
 import { useFrame } from "@react-three/fiber";
-import {
-  CuboidCollider,
-  type RapierRigidBody,
-  RigidBody,
-} from "@react-three/rapier";
-import { useRef } from "react";
-import { Quaternion } from "three";
+import { CuboidCollider, type RapierCollider } from "@react-three/rapier";
+import { Fragment, useRef } from "react";
+import { type Mesh, Quaternion, Vector3 } from "three";
+import { type Frequency } from "tone/build/esm/core/type/Units";
 
 const sides = 6;
-const radius = 24;
+const radius = 18;
 const sideThickness = 1;
 const sideHeight = 1;
 const angleIncrement = (2 * Math.PI) / sides;
 const distanceToSide = radius * Math.cos(Math.PI / 6) - sideThickness / 2;
 const sideArray = Array.from({ length: sides });
-const rotationSpeed = 0.7;
 
-function Hexagon({ bounciness }: { bounciness: number }) {
-  const synth = useSynth();
+function Hexagon({
+  bounciness,
+  rotationSpeed,
+  openness,
+}: {
+  bounciness: number;
+  rotationSpeed: number;
+  openness: number;
+}) {
+  const playSound = useDetuneSynth();
   const rotationAngle = useRef(0);
-  const rigidBodyRef = useRef<RapierRigidBody>(null);
+  const colliderRefs = useRef<(RapierCollider | null)[]>(
+    Array(sides).fill(null) as null[],
+  );
+  const meshRefs = useRef<(Mesh | null)[]>(Array(sides).fill(null) as null[]);
 
+  // Handle continuous rotation and update side positions
   useFrame((_, delta) => {
-    if (rigidBodyRef.current) {
-      rotationAngle.current += rotationSpeed * delta;
-      // Create a quaternion for Z-axis rotation
-      const quaternion = new Quaternion();
-      quaternion.setFromAxisAngle({ x: 0, y: 0, z: 1 }, rotationAngle.current);
+    rotationAngle.current += rotationSpeed * delta;
+    const wholeRotation = new Quaternion().setFromAxisAngle(
+      { x: 0, y: 0, z: 1 },
+      rotationAngle.current,
+    );
 
-      rigidBodyRef.current.setNextKinematicRotation(quaternion);
-    }
+    colliderRefs.current.forEach((collider, i) => {
+      if (collider) {
+        const angle = i * angleIncrement;
+        const baseRotation = Math.PI / openness + angle + Math.PI / 2;
+
+        // Calculate position relative to center
+        const baseX = distanceToSide * Math.cos(angle);
+        const baseY = distanceToSide * Math.sin(angle);
+        const basePosition = new Vector3(baseX, baseY, 0);
+
+        // Rotate the position around the center
+        basePosition.applyQuaternion(wholeRotation);
+
+        // Update position
+        // rigidBody.setNextKinematicTranslation(basePosition);
+        collider.setTranslation(basePosition);
+        const child = meshRefs.current[i];
+        if (child) {
+          child.position.copy(collider.translation());
+        }
+
+        // Combine the opening rotation with the whole shape rotation
+        const sideRotation = new Quaternion().setFromAxisAngle(
+          { x: 0, y: 0, z: 1 },
+          baseRotation,
+        );
+
+        // Ensure proper quaternion multiplication order
+        const finalRotation = sideRotation.multiply(wholeRotation);
+
+        // rigidBody.setNextKinematicRotation(finalRotation);
+        collider.setRotation(finalRotation);
+        if (child) {
+          child.rotation.setFromQuaternion(finalRotation);
+        }
+      }
+    });
   });
 
+  const setColliderRef = (index: number) => (ref: RapierCollider | null) => {
+    colliderRefs.current[index] = ref;
+  };
+
+  const setMeshRef = (index: number) => (ref: Mesh | null) => {
+    meshRefs.current[index] = ref;
+  };
+
   return (
-    <RigidBody
-      ref={rigidBodyRef}
-      type="kinematicPosition"
-      position={[0, 0, 0]}
-      rotation={[0, 0, 0]}
-      restitution={bounciness}
-    >
+    <>
       {sideArray.map((_, i) => {
-        const angle = Math.PI / 2 + i * angleIncrement;
+        const angle = i * angleIncrement;
+        const baseRotation = angle + Math.PI / 2;
         const x = distanceToSide * Math.cos(angle);
         const y = distanceToSide * Math.sin(angle);
+
         return (
-          <group
-            key={i}
-            position={[x, y, 0]}
-            rotation={[0, 0, angle + Math.PI / 2]}
-          >
+          <Fragment key={`hex-wall-${i}`}>
             <CuboidCollider
-              args={[radius / 2, sideThickness / 2, sideHeight / 2]}
+              ref={setColliderRef(i)}
+              position={[x, y, 0]}
+              rotation={[0, 0, baseRotation]}
               restitution={bounciness}
+              args={[radius / 2, sideThickness / 2, sideHeight / 2]}
               onCollisionEnter={(e) => {
-                if (typeof e.rigidBodyObject?.userData.note === "string") {
-                  synth.triggerAttackRelease(
-                    e.rigidBodyObject?.userData.note,
-                    "8n",
-                  );
-                }
+                playSound(e.rigidBodyObject?.userData.note as Frequency[]);
               }}
             />
-            <mesh castShadow receiveShadow>
+            <mesh castShadow receiveShadow ref={setMeshRef(i)}>
               <boxGeometry args={[radius, sideThickness, sideHeight]} />
               <meshStandardMaterial color="#ffffff" />
             </mesh>
-          </group>
+          </Fragment>
         );
       })}
-    </RigidBody>
+    </>
   );
 }
 

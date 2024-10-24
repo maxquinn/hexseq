@@ -9,7 +9,6 @@ declare module "hydra-synth" {
     detectAudio?: boolean;
     numSources?: number;
     numOutputs?: number;
-    extendTransforms?: any[];
     precision?: "highp" | "mediump" | "lowp";
   }
 
@@ -26,8 +25,15 @@ declare module "hydra-synth" {
     shape(sides?: number, radius?: number, smoothing?: number): HydraFunction;
     solid(r?: number, g?: number, b?: number, a?: number): HydraFunction;
     render(output?: HydraFunction): void;
-    voronoi(sides?: number, radius?: number, smoothing?: number): HydraFunction;
-    noise(scale?: number, speed?: number): HydraFunction;
+    voronoi(
+      sides?: HydraInput<number>,
+      radius?: HydraInput<number>,
+      smoothing?: HydraInput<number>,
+    ): HydraFunction;
+    noise(
+      scale?: HydraInput<number>,
+      speed?: HydraInput<number>,
+    ): HydraFunction;
     mouse: {
       x: number;
       y: number;
@@ -59,14 +65,24 @@ declare module "hydra-synth" {
     blend(src: HydraFunction, amount?: number): HydraFunction;
     luma(threshold?: number, tolerance?: number): HydraFunction;
     mask(src: HydraFunction): HydraFunction;
-    rotate(angle?: number, speed?: number): HydraFunction;
+    rotate(angle?: HydraInput<number>, speed?: number): HydraFunction;
     brightness(amount?: HydraInput<number>): HydraFunction;
+    contrast(amount?: HydraInput<number>): HydraFunction;
     modulatePixelate(src: HydraFunction, amount?: number): HydraFunction;
     saturate(amount?: HydraInput<number>): HydraFunction;
-    color(r?: number, g?: number, b?: number, a?: number): HydraFunction;
+    color(
+      r?: HydraInput<number>,
+      g?: HydraInput<number>,
+      b?: HydraInput<number>,
+      a?: HydraInput<number>,
+    ): HydraFunction;
     pixelate(amount?: number, speed?: number): HydraFunction;
     modulate(src: HydraFunction, amount?: HydraInput<number>): HydraFunction;
-    kaleid(sides?: number, radius?: number, smoothing?: number): HydraFunction;
+    kaleid(
+      sides?: HydraInput<number>,
+      radius?: number,
+      smoothing?: number,
+    ): HydraFunction;
     mult(src: HydraFunction): HydraFunction;
     modulateScale(src: HydraFunction, amount?: number): HydraFunction;
   }
