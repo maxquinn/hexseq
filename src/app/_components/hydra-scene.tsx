@@ -26,11 +26,11 @@ import { v4 as uuidv4 } from "uuid";
 const realValues = {
   gravity: {
     min: 0,
-    max: 100,
+    max: 98,
   },
   bounciness: {
     min: 0,
-    max: 1.1,
+    max: 1,
   },
   rotationSpeed: {
     min: 0,
@@ -111,7 +111,7 @@ function HydraScene() {
       <div className="absolute bottom-6 left-6 z-10">
         <div className="flex flex-col gap-6 md:flex-row">
           <Knob
-            label="Openness"
+            label="Shape"
             min={0}
             max={100}
             value={openness}
@@ -160,7 +160,6 @@ function HydraScene() {
             lerp(realValues.gravity.min, realValues.gravity.max, gravity),
             0,
           ]}
-          debug
         >
           <Hexagon
             bounciness={lerp(

@@ -43,8 +43,12 @@ function Ball({
       ref={ballRef}
       position={position}
       restitution={bounciness}
+      linearDamping={0}
+      angularDamping={0}
+      friction={0}
       colliders="ball"
       type="dynamic"
+      lockRotations
       ccd
       userData={{
         note: note,

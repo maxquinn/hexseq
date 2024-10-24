@@ -99,6 +99,7 @@ function Hexagon({
               position={[x, y, 0]}
               rotation={[0, 0, baseRotation]}
               restitution={bounciness}
+              friction={0}
               args={[radius / 2, sideThickness / 2, sideHeight / 2]}
               onCollisionEnter={(e) => {
                 playSound(e.rigidBodyObject?.userData.note as Frequency[]);
