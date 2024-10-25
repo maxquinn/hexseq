@@ -11,6 +11,14 @@ type KnobBaseThumbProps = {
   readonly value01: number;
 };
 
+type KnobHeadlessProps = React.ComponentProps<typeof KnobHeadless>;
+
+type KnobBaseProps = Pick<KnobHeadlessProps, "valueMin" | "valueMax"> & {
+  readonly label: string;
+  readonly value: number;
+  readonly onChange: (value: number) => void;
+};
+
 function KnobBaseThumb({ value01 }: KnobBaseThumbProps) {
   const angleMin = -145;
   const angleMax = 145;
@@ -23,13 +31,6 @@ function KnobBaseThumb({ value01 }: KnobBaseThumbProps) {
     </div>
   );
 }
-
-type KnobHeadlessProps = React.ComponentProps<typeof KnobHeadless>;
-type KnobBaseProps = Pick<KnobHeadlessProps, "valueMin" | "valueMax"> & {
-  readonly label: string;
-  readonly value: number;
-  readonly onChange: (value: number) => void;
-};
 
 function Knob({ label, value, onChange, valueMin, valueMax }: KnobBaseProps) {
   const knobId = useId();

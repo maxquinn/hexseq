@@ -1,6 +1,6 @@
 "use client";
 
-import { useDetuneSynth } from "@/app/_hooks/use-synth";
+import { useSynth } from "@/app/_hooks/use-synth";
 import {
   useBounciness,
   useOpenness,
@@ -24,7 +24,7 @@ function Hexagon() {
   const bounciness = useBounciness();
   const rotationSpeed = useRotationSpeed();
   const openness = useOpenness();
-  const playSound = useDetuneSynth();
+  const playSound = useSynth();
   const rotationAngle = useRef(0);
   const colliderRefs = useRef<(RapierCollider | null)[]>(
     Array(sides).fill(null) as null[],

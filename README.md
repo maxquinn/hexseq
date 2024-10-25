@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# HexSeq
 
-## Getting Started
+A web-based recreation of the Tombola sequencer from Teenage Engineering's OP-1 synthesizer.
 
-First, run the development server:
+## Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This project is heavily inspired by the OP-1's Tombola sequencer. The original sequencer, found in Teenage Engineering's OP-1 synthesizer, uses a rotating hexagon with balls bouncing inside to create unique musical sequences. This recreation brings that concept to the web, allowing for interactive experimentation with physics-based music generation.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Keyboard controls:
+  - a-h: play high octave chords
+  - z-n: play mid octave chords
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Play some chords and experiment with the dials. Enjoy the unique sounds!
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+- **Physics-Based Sequencing**: Uses Rapier physics engine to simulate ball bounces and collisions
+- **Interactive Controls**:
+  - Adjust the gravity of the scene
+  - Adjust rotation speed of the hexagonal drum
+  - Modify the bounciness of the balls
+  - Control the "openness" of the hexagon's sides
+  - Volume controls for vinyl and rain sounds
+- **Real-Time Sound Generation**: Triggers synthesizer sounds on collision events
+- **Smooth Animations**: Fluid motion and transitions powered by React Three Fiber
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- React
+- Next.js
+- React Three Fibre
+- Rapier
+- Tone.js
+- Hydra Synth (Background visuals)

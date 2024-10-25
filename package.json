@@ -1,6 +1,6 @@
 {
-  "name": "hydra-test",
-  "version": "0.1.0",
+  "name": "hexseq",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {

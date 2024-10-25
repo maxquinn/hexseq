@@ -3,6 +3,7 @@
 import { Ball } from "@/app/_components/ball";
 import { Drawer } from "@/app/_components/drawer";
 import { Hexagon } from "@/app/_components/hexagon";
+import { Keys } from "@/app/_components/keys";
 import { useKeyboard } from "@/app/_hooks/use-keyboard";
 import { Controls, useGravity } from "@/app/_modules/controls";
 import { OrthographicCamera } from "@react-three/drei";
@@ -21,19 +22,24 @@ function TombolaScene() {
   const gravity = useGravity();
   const [balls, setBalls] = useState<{ id: string; note: Frequency[] }[]>([]);
 
-  useKeyboard((note) => {
+  const handeNotePlayed = useCallback((note: Frequency[]) => {
     setBalls((prev) => [...prev, { id: uuidv4(), note }]);
-  });
+  }, []);
+
+  useKeyboard(handeNotePlayed);
 
   const handleOutOfBounds = useCallback((idToRemove: string) => {
     setBalls((prevBalls) => prevBalls.filter((ball) => ball.id !== idToRemove));
   }, []);
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-full w-full overflow-hidden">
       <Drawer>
         <Controls />
       </Drawer>
+      <div className="absolute bottom-0 z-10 flex w-full justify-center md:hidden">
+        <Keys onKeyClick={handeNotePlayed} />
+      </div>
       <Canvas className="h-full w-full">
         <Physics
           colliders="ball"
