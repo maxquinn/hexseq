@@ -26,9 +26,9 @@ declare module "hydra-synth" {
     solid(r?: number, g?: number, b?: number, a?: number): HydraFunction;
     render(output?: HydraFunction): void;
     voronoi(
-      sides?: HydraInput<number>,
-      radius?: HydraInput<number>,
-      smoothing?: HydraInput<number>,
+      scale?: HydraInput<number>,
+      speed?: HydraInput<number>,
+      blending?: HydraInput<number>,
     ): HydraFunction;
     noise(
       scale?: HydraInput<number>,
@@ -76,6 +76,7 @@ declare module "hydra-synth" {
       b?: HydraInput<number>,
       a?: HydraInput<number>,
     ): HydraFunction;
+    scale(size?: number, xMult?: number, yMult?: number): HydraFunction;
     pixelate(amount?: number, speed?: number): HydraFunction;
     modulate(src: HydraFunction, amount?: HydraInput<number>): HydraFunction;
     kaleid(
@@ -85,5 +86,6 @@ declare module "hydra-synth" {
     ): HydraFunction;
     mult(src: HydraFunction): HydraFunction;
     modulateScale(src: HydraFunction, amount?: number): HydraFunction;
+    diff(src: HydraFunction): HydraFunction;
   }
 }

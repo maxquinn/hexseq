@@ -3,8 +3,6 @@
 import { Ball } from "@/app/_components/ball";
 import { Fader } from "@/app/_components/fader";
 import { Hexagon } from "@/app/_components/hexagon";
-import { HydraBackgroundPlane } from "@/app/_components/hydra-background-plane";
-import { HydraRenderer } from "@/app/_components/hydra-renderer";
 import { Knob } from "@/app/_components/knob";
 import { useKeyboard } from "@/app/_hooks/use-keyboard";
 import { useVinylSim } from "@/app/_hooks/use-vinyl-sim";
@@ -17,9 +15,7 @@ import {
   ToneMapping,
 } from "@react-three/postprocessing";
 import { Physics } from "@react-three/rapier";
-import type Hydra from "hydra-synth";
 import { useCallback, useEffect, useState } from "react";
-import { CanvasTexture, RepeatWrapping, type Texture } from "three";
 import { type Frequency } from "tone/build/esm/core/type/Units";
 import { v4 as uuidv4 } from "uuid";
 
@@ -34,7 +30,7 @@ const realValues = {
   },
   rotationSpeed: {
     min: 0,
-    max: 1,
+    max: 2,
   },
   openness: {
     min: 1,
@@ -46,12 +42,11 @@ const realValues = {
   },
 } as const;
 
-function HydraScene() {
-  const [hydraTexture, setHydraTexture] = useState<Texture | null>(null);
+function TombolaScene() {
   const [balls, setBalls] = useState<{ id: string; note: Frequency[] }[]>([]);
   const [gravity, setGravity] = useState<number>(100);
   const [bounciness, setBounciness] = useState<number>(100);
-  const [rotationSpeed, setRotationSpeed] = useState<number>(70);
+  const [rotationSpeed, setRotationSpeed] = useState<number>(30);
   const [openness, setOpenness] = useState<number>(0);
   const [vinylSim, setVinylSim] = useState<number>(0);
   const { start, stop, setVolume, state } = useVinylSim({
@@ -63,18 +58,8 @@ function HydraScene() {
     setBalls((prev) => [...prev, { id: uuidv4(), note }]);
   });
 
-  const handleHydraReady = useCallback((canvas: HTMLCanvasElement) => {
-    const texture = new CanvasTexture(canvas);
-    texture.wrapS = texture.wrapT = RepeatWrapping;
-    setHydraTexture(texture);
-  }, []);
-
   const handleOutOfBounds = useCallback((idToRemove: string) => {
     setBalls((prevBalls) => prevBalls.filter((ball) => ball.id !== idToRemove));
-  }, []);
-
-  const sketch = useCallback((h: Hydra["synth"]) => {
-    h.voronoi(10, 0.5, 10).modulatePixelate(h.noise(25, 0.5), 100).out(h.o0);
   }, []);
 
   useEffect(() => {
@@ -94,13 +79,13 @@ function HydraScene() {
   }, [start]);
 
   return (
-    <div className="h-full w-full bg-black">
-      <div className="absolute left-6 top-6 z-10">
+    <div className="relative h-full w-full">
+      <div className="absolute z-10 h-full w-full p-6">
         <div className="flex flex-col gap-6 md:flex-row">
-          <Fader
-            label="Vinyl Sim"
-            min={0}
-            max={100}
+          <Knob
+            label="Vinyl Sim Volume"
+            valueMin={0}
+            valueMax={100}
             value={vinylSim}
             onChange={(value) => {
               setVinylSim(value);
@@ -109,11 +94,11 @@ function HydraScene() {
         </div>
       </div>
       <div className="absolute bottom-6 left-6 z-10">
-        <div className="flex flex-col gap-6 md:flex-row">
+        <div className="align-evenly flex flex-row gap-6">
           <Knob
             label="Shape"
-            min={0}
-            max={100}
+            valueMin={0}
+            valueMax={100}
             value={openness}
             onChange={(value) => {
               setOpenness(value);
@@ -121,17 +106,17 @@ function HydraScene() {
           />
           <Knob
             label="Gravity"
-            min={0}
-            max={100}
+            valueMin={0}
+            valueMax={100}
             value={gravity}
             onChange={(value) => {
               setGravity(value);
             }}
           />
           <Knob
-            label="Bounciness"
-            min={0}
-            max={100}
+            label="Bounce"
+            valueMin={0}
+            valueMax={100}
             value={bounciness}
             onChange={(value) => {
               setBounciness(value);
@@ -139,8 +124,8 @@ function HydraScene() {
           />
           <Knob
             label="Rotation"
-            min={0}
-            max={100}
+            valueMin={0}
+            valueMax={100}
             value={rotationSpeed}
             onChange={(value) => {
               setRotationSpeed(value);
@@ -148,9 +133,7 @@ function HydraScene() {
           />
         </div>
       </div>
-      <HydraRenderer sketch={sketch} onHydraReady={handleHydraReady} />
       <Canvas className="h-full w-full">
-        {hydraTexture && <HydraBackgroundPlane texture={hydraTexture} />}
         <Physics
           colliders="ball"
           maxCcdSubsteps={10}
@@ -212,4 +195,4 @@ function HydraScene() {
   );
 }
 
-export { HydraScene };
+export { TombolaScene };
