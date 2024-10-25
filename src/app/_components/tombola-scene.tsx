@@ -14,7 +14,7 @@ import {
   ToneMapping,
 } from "@react-three/postprocessing";
 import { Physics } from "@react-three/rapier";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { type Frequency } from "tone/build/esm/core/type/Units";
 import { v4 as uuidv4 } from "uuid";
 
@@ -29,7 +29,7 @@ const realValues = {
   },
   rotationSpeed: {
     min: 0,
-    max: 2,
+    max: 1.5,
   },
   openness: {
     min: 1,
@@ -49,6 +49,7 @@ function TombolaScene() {
   const [openness, setOpenness] = useState<number>(0);
   const {
     start: startVinylSim,
+    stop: stopVinylSim,
     volume: vinylSimVolume,
     setVolume: setVinylSimVolume,
     state: vinylSimState,
@@ -58,6 +59,7 @@ function TombolaScene() {
   });
   const {
     start: startRain,
+    stop: stopRain,
     volume: rainVolume,
     setVolume: setRainVolume,
     state: rainState,
@@ -74,19 +76,6 @@ function TombolaScene() {
     setBalls((prevBalls) => prevBalls.filter((ball) => ball.id !== idToRemove));
   }, []);
 
-  useEffect(() => {
-    if (!vinylSimState.isPlaying) {
-      startVinylSim().catch((error) => {
-        console.error("Error starting audio player:", error);
-      });
-    }
-    if (!rainState.isPlaying) {
-      startRain().catch((error) => {
-        console.error("Error starting audio player:", error);
-      });
-    }
-  }, [startVinylSim, startRain, vinylSimState.isPlaying, rainState.isPlaying]);
-
   return (
     <div className="relative h-full w-full">
       <div className="absolute z-10 h-full w-full p-6">
@@ -96,15 +85,35 @@ function TombolaScene() {
             valueMin={0}
             valueMax={100}
             value={vinylSimVolume}
-            onChange={setVinylSimVolume}
+            onChange={(v) => {
+              if (v > 0) {
+                if (!vinylSimState.isPlaying) {
+                  startVinylSim().catch((error) => {
+                    console.error("Error starting audio player:", error);
+                  });
+                }
+              } else {
+                stopVinylSim();
+              }
+              setVinylSimVolume(v);
+            }}
           />
           <Knob
             label="Rain Volume"
             valueMin={0}
             valueMax={100}
             value={rainVolume}
-            onChange={(value) => {
-              setRainVolume(value);
+            onChange={(v) => {
+              if (v > 0) {
+                if (!rainState.isPlaying) {
+                  startRain().catch((error) => {
+                    console.error("Error starting audio player:", error);
+                  });
+                }
+              } else {
+                stopRain();
+              }
+              setRainVolume(v);
             }}
           />
         </div>

@@ -89,7 +89,9 @@ function useAudioPlayer(options: AudioPlayerOptions): AudioPlayerControls {
     try {
       if (!playerRef.current || state.error) return;
 
-      playerRef.current.start();
+      if (playerRef.current.state === "stopped") {
+        playerRef.current.start();
+      }
       setState((prev) => ({ ...prev, isPlaying: true }));
     } catch (error) {
       setState((prev) => ({
