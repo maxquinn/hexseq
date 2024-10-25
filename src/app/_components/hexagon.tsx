@@ -1,4 +1,11 @@
+"use client";
+
 import { useDetuneSynth } from "@/app/_hooks/use-synth";
+import {
+  useBounciness,
+  useOpenness,
+  useRotationSpeed,
+} from "@/app/_modules/controls";
 import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, type RapierCollider } from "@react-three/rapier";
 import { Fragment, useRef } from "react";
@@ -13,15 +20,10 @@ const angleIncrement = (2 * Math.PI) / sides;
 const distanceToSide = radius * Math.cos(Math.PI / 6) - sideThickness / 2;
 const sideArray = Array.from({ length: sides });
 
-function Hexagon({
-  bounciness,
-  rotationSpeed,
-  openness,
-}: {
-  bounciness: number;
-  rotationSpeed: number;
-  openness: number;
-}) {
+function Hexagon() {
+  const bounciness = useBounciness();
+  const rotationSpeed = useRotationSpeed();
+  const openness = useOpenness();
   const playSound = useDetuneSynth();
   const rotationAngle = useRef(0);
   const colliderRefs = useRef<(RapierCollider | null)[]>(

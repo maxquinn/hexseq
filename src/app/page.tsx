@@ -1,5 +1,5 @@
 import { HydraCanvas } from "@/app/_components/hydra-canvas";
-import { TombolaScene } from "@/app/_components/tombola-scene";
+import { TombolaScene } from "@/app/_modules/tombola-scene";
 
 export default function Home() {
   return (

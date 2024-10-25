@@ -1,3 +1,6 @@
+"use client";
+
+import { useBounciness } from "@/app/_modules/controls";
 import { useFrame } from "@react-three/fiber";
 import { type RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { useEffect, useRef, useState } from "react";
@@ -6,16 +9,15 @@ import { type Frequency } from "tone/build/esm/core/type/Units";
 function Ball({
   id,
   position,
-  bounciness,
   note,
   onOutOfBounds,
 }: {
   id: string;
   position: [number, number, number];
-  bounciness: number;
   note: Frequency[];
   onOutOfBounds: (id: string) => void;
 }) {
+  const bounciness = useBounciness();
   const ballRef = useRef<RapierRigidBody>(null);
   const [collided, setCollided] = useState<boolean>(false);
 
