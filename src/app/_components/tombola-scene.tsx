@@ -1,11 +1,10 @@
 "use client";
 
 import { Ball } from "@/app/_components/ball";
-import { Fader } from "@/app/_components/fader";
 import { Hexagon } from "@/app/_components/hexagon";
 import { Knob } from "@/app/_components/knob";
+import { useAudioPlayer } from "@/app/_hooks/use-audio-player";
 import { useKeyboard } from "@/app/_hooks/use-keyboard";
-import { useVinylSim } from "@/app/_hooks/use-vinyl-sim";
 import { lerp } from "@/app/_utils/lerp";
 import { OrthographicCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
@@ -48,10 +47,23 @@ function TombolaScene() {
   const [bounciness, setBounciness] = useState<number>(100);
   const [rotationSpeed, setRotationSpeed] = useState<number>(30);
   const [openness, setOpenness] = useState<number>(0);
-  const [vinylSim, setVinylSim] = useState<number>(0);
-  const { start, stop, setVolume, state } = useVinylSim({
+  const {
+    start: startVinylSim,
+    volume: vinylSimVolume,
+    setVolume: setVinylSimVolume,
+    state: vinylSimState,
+  } = useAudioPlayer({
     initialVolume: 0,
     audioUrl: "/audio/vinyl-sim.mp3",
+  });
+  const {
+    start: startRain,
+    volume: rainVolume,
+    setVolume: setRainVolume,
+    state: rainState,
+  } = useAudioPlayer({
+    initialVolume: 0,
+    audioUrl: "/audio/rain.mp3",
   });
 
   useKeyboard((note) => {
@@ -63,20 +75,17 @@ function TombolaScene() {
   }, []);
 
   useEffect(() => {
-    if (!state.isPlaying) {
-      start().catch((error) => {
+    if (!vinylSimState.isPlaying) {
+      startVinylSim().catch((error) => {
         console.error("Error starting audio player:", error);
       });
     }
-
-    setVolume(lerp(0, 25, vinylSim));
-  }, [vinylSim, setVolume, state.isPlaying, start, stop]);
-
-  useEffect(() => {
-    start().catch((error) => {
-      console.error("Error starting audio player:", error);
-    });
-  }, [start]);
+    if (!rainState.isPlaying) {
+      startRain().catch((error) => {
+        console.error("Error starting audio player:", error);
+      });
+    }
+  }, [startVinylSim, startRain, vinylSimState.isPlaying, rainState.isPlaying]);
 
   return (
     <div className="relative h-full w-full">
@@ -86,9 +95,16 @@ function TombolaScene() {
             label="Vinyl Sim Volume"
             valueMin={0}
             valueMax={100}
-            value={vinylSim}
+            value={vinylSimVolume}
+            onChange={setVinylSimVolume}
+          />
+          <Knob
+            label="Rain Volume"
+            valueMin={0}
+            valueMax={100}
+            value={rainVolume}
             onChange={(value) => {
-              setVinylSim(value);
+              setRainVolume(value);
             }}
           />
         </div>
