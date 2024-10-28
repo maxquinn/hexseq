@@ -21,7 +21,7 @@ function Key({ note, onClick }: PianoKeyProps) {
           navigator.vibrate(20);
         }
       }}
-      className="h-24 w-6 touch-none select-none rounded-t-sm bg-zinc-300 shadow-md active:bg-[#AFDDDE]"
+      className="h-24 w-6 touch-none select-none rounded-t-sm bg-zinc-300 opacity-50 shadow-md active:bg-[#AFDDDE]"
       aria-label={`Piano key ${note.toString()}`}
     />
   );
